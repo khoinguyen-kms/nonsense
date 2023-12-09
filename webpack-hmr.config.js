@@ -18,10 +18,6 @@ module.exports = function(options, webpack) {
       }),
       new RunScriptWebpackPlugin({ name: options.output.filename, autoRestart: false }),
     ],
-    watchOptions: {
-      poll: 1000,
-      aggregateTimeout: 300,
-    }
   };
 };
 

@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { VERSION_NEUTRAL, VersioningType } from '@nestjs/common';
 
 declare const module: any;
 
