@@ -2,9 +2,6 @@ import { ConfigService } from "@nestjs/config";
 import { DataSource } from "typeorm";
 import { MysqlConnectionOptions } from "typeorm/driver/mysql/MysqlConnectionOptions";
 
-
-const configService = new ConfigService();
-
 export const mysqlConfig: MysqlConnectionOptions = {
   name: 'default',
   type: 'mysql',
