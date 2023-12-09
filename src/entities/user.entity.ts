@@ -1,5 +1,6 @@
 import { UserRole } from "src/shared/enums/userRole.enum"
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import * as bcrypt from "bcrypt";
 
 @Entity({ name: 'users' })
 export class User {
@@ -23,4 +24,9 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt: Date
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
 }
