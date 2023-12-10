@@ -26,18 +26,19 @@ export class JwtGuard implements CanActivate {
     const token = this.extractTokenFromHeaders(request);
 
     if (!token) throw new UnauthorizedException('You should sign in before')
+
     try {
       const payload = await this.jwtService.verifyAsync(token, { secret: JWT_SECRET_KEY })
       request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
+    } catch (err) {
+      throw new UnauthorizedException(err);
     }
 
     return true;
   }
 
   private extractTokenFromHeaders(request: Request): string | undefined {
-    const [type, token] = request.headers['Authorization']?.split(' ') ?? [];
+    const [type, token] = request.headers['authorization']?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
 }

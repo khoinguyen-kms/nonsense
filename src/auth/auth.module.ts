@@ -12,7 +12,7 @@ import { JWT_SECRET_KEY } from 'src/utils/constants';
       global: true,
       secret: JWT_SECRET_KEY, // This should be moved to more protective storage
       signOptions: {
-        expiresIn: '60s'
+        expiresIn: '300s'
       }
     })
   ],

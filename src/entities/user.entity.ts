@@ -1,6 +1,7 @@
 import { UserRole } from "src/shared/enums/userRole.enum"
 import { BeforeInsert, Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import * as bcrypt from "bcrypt";
+import { Exclude } from "class-transformer";
 
 @Entity({ name: 'users' })
 export class User {
@@ -10,6 +11,7 @@ export class User {
   @Column({ type: 'varchar', unique: true })
   username: string
 
+  @Exclude()
   @Column({ type: 'varchar', unique: true })
   password: string
 
@@ -22,6 +24,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date
 
+  @Exclude()
   @DeleteDateColumn()
   deletedAt: Date
 
