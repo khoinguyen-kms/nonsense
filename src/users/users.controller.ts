@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -11,6 +11,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @Get()
   async index() {
-    return await this.userService.getUsers();
+    const users = await this.userService.getUsers();
+    return { data: users };
   }
 }

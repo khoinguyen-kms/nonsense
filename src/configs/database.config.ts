@@ -13,7 +13,7 @@ export const mysqlConfig: MysqlConnectionOptions = {
   entities: ['dist/**/*.entity{.ts,.js}'],
   synchronize: false,
   dropSchema: false,
-  migrations: ['dist/migrations/*.ts'],
+  migrations: ['dist/migrations/*.js'],
   migrationsTableName: 'migration_versions',
   logging: true
 }
