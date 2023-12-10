@@ -24,4 +24,11 @@ export class AuthController {
   async registration(@Body() createUserDto: CreateUserDto) {
     return this.authService.registration(createUserDto);
   }
+
+  @PublicRoute()
+  @Post('refresh_token')
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(@Body() { refresh_token }) {
+    return await this.authService.refreshToken(refresh_token);
+  }
 }

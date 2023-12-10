@@ -15,8 +15,8 @@ export class User {
   @Column({ type: 'varchar', unique: true })
   password: string
 
-  @Column({ type: 'enum', default: UserRole.USER, enum: UserRole })
-  role: UserRole[]
+  @Column({ type: 'enum', default: [UserRole.USER], enum: UserRole, array: true })
+  roles: UserRole[]
 
   @CreateDateColumn()
   createdAt: Date
@@ -28,8 +28,12 @@ export class User {
   @DeleteDateColumn()
   deletedAt: Date
 
+  @Exclude()
+  @Column({ type: 'varchar', nullable: true, default: null })
+  refreshToken: string
+
   @BeforeInsert()
-  async hashPassword() {
+  private async hashPassword() {
     this.password = await bcrypt.hash(this.password, 10);
   }
 }
