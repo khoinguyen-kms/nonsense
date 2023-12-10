@@ -4,6 +4,7 @@ import { UsersService } from 'src/users/users.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from 'src/dtos/login.dto';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { PublicRoute } from 'src/utils/decorators';
 
 @Controller()
 export class AuthController {
@@ -11,14 +12,16 @@ export class AuthController {
     private authService: AuthService
   ) { }
 
-  @HttpCode(HttpStatus.OK)
   @Post('login')
+  @PublicRoute()
+  @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto.username, loginDto.password);
   }
 
-  @HttpCode(HttpStatus.CREATED)
+  @PublicRoute()
   @Post('registration')
+  @HttpCode(HttpStatus.CREATED)
   async registration(@Body() createUserDto: CreateUserDto) {
     return this.authService.registration(createUserDto);
   }
