@@ -6,6 +6,8 @@ import { UserRepository } from './user.repository';
 import * as bcrypt from "bcrypt";
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
+import { PaginationDto } from 'src/dtos/pagination.dto';
+import { PAGINATION_DEFAULT } from 'src/utils/constants';
 
 @Injectable()
 export class UsersService {
@@ -48,8 +50,30 @@ export class UsersService {
     return await this.userRepository.findOneBy(filters);
   }
 
-  async getUsersWithDeleted() {
-    return await this.userRepository.find({ withDeleted: true });
+  async getUsersWithDeleted(filter: PaginationDto) {
+    const page = Number(filter.page) || PAGINATION_DEFAULT.page;
+    const perPage = Number(filter.per_page) || PAGINATION_DEFAULT.per_page;
+    const skip = (page - 1) * perPage;
+
+    const [users, total] = await this.userRepository.findAndCount({
+      withDeleted: true,
+      take: perPage,
+      skip: skip,
+      order: { createdAt: 'DESC' },
+    });
+
+    const lastPage = Math.ceil(total / perPage);
+    const nextPage = page + 1 > lastPage ? null : page + 1;
+    const prevPage = page - 1 < 1 ? null : page - 1;
+    return {
+      data: users,
+      metadata: {
+        total,
+        current_page: page,
+        next_page: nextPage,
+        last_page: lastPage
+      }
+    }
   }
 
   async removeUserSoftly(id: number): Promise<boolean> {

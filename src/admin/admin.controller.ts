@@ -1,8 +1,9 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Roles } from 'src/utils/decorators';
 import { UserRole } from 'src/shared/enums/userRole.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/dtos/pagination.dto';
 
 @ApiBearerAuth()
 @ApiTags('Admin')
@@ -21,8 +22,7 @@ export class AdminController {
   @Roles(UserRole.ADMIN)
   @Get('users')
   @HttpCode(HttpStatus.OK)
-  async fetchAllUsers() {
-    const users = await this.adminService.getAllUsers();
-    return { data: users }
+  async fetchAllUsers(@Query() query: PaginationDto) {
+    return await this.adminService.getAllUsers(query);
   }
 }
