@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PaginationDto } from 'src/dtos/pagination.dto';
 import { User } from 'src/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 
@@ -8,8 +9,8 @@ export class AdminService {
     private readonly userService: UsersService
   ) { }
 
-  async getAllUsers(): Promise<User[]> {
-    return await this.userService.getUsersWithDeleted();
+  async getAllUsers(filter: PaginationDto): Promise<any> {
+    return await this.userService.getUsersWithDeleted(filter);
   }
 
   async deleteUser(id: number): Promise<boolean> {
