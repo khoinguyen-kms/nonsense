@@ -39,6 +39,10 @@ export class UsersService {
     return user;
   }
 
+  async getUsers() {
+    return await this.userRepository.find();
+  }
+
   private async comparePassword(passwod: string, storedPassword: string) {
     return await bcrypt.compare(passwod, storedPassword);
   }
