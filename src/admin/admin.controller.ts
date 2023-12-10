@@ -2,7 +2,10 @@ import { Controller, Delete, Get, HttpCode, HttpStatus, Param } from '@nestjs/co
 import { AdminService } from './admin.service';
 import { Roles } from 'src/utils/decorators';
 import { UserRole } from 'src/shared/enums/userRole.enum';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
+@ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
 
