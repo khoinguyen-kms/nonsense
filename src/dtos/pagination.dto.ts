@@ -9,5 +9,5 @@ export class PaginationDto {
   per_page: string;
 
   @ApiProperty({ type: 'enum', enum: OrderFilter })
-  order: OrderFilter
+  order: OrderFilter;
 }

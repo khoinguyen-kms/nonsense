@@ -18,13 +18,16 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    private readonly paginationService: PaginationService<User>
-  ) { }
+    private readonly paginationService: PaginationService<User>,
+  ) {}
 
   async createNewUser(inputs: CreateUserDto) {
     const { confirm_password, ...user } = inputs;
     const checkUser = this.findUserByUsername(inputs.username);
-    if (checkUser) throw new BadRequestException(`User ${inputs.username} is already registerated.`);
+    if (checkUser)
+      throw new BadRequestException(
+        `User ${inputs.username} is already registerated.`,
+      );
 
     if (confirm_password === user.password) {
       const newUser = this.userRepository.create(user);

@@ -11,19 +11,19 @@ export class CreateUserDto {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  email: string
+  email: string;
 
   @ApiProperty()
   @IsString()
   @MaxLength(30)
   @IsNotEmpty()
-  firstName: string
+  firstName: string;
 
   @ApiProperty()
   @IsString()
   @MaxLength(30)
   @IsNotEmpty()
-  lastName: string
+  lastName: string;
 
   @ApiProperty()
   @IsString()

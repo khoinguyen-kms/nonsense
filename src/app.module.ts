@@ -21,7 +21,7 @@ import { RolesGuard } from './auth/roles.guard';
     TypeOrmModule.forRoot(mysqlConfig),
     UsersModule,
     AuthModule,
-    AdminModule
+    AdminModule,
   ],
   controllers: [AppController, AuthController, AdminController],
   providers: [
@@ -38,4 +38,4 @@ import { RolesGuard } from './auth/roles.guard';
     AdminService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

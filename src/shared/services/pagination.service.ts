@@ -1,16 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { PaginationResponseDto } from "src/dtos/pagination-response.dto";
-import { PaginationDto } from "src/dtos/pagination.dto";
-import { PAGINATION_DEFAULT } from "src/utils/constants";
-import { FindOptionsOrder, Repository } from "typeorm";
-import { OrderFilter } from "../enums/order-filter.enum";
-import { AbstractEntity } from "src/entities/abstract.entity";
+import { Injectable } from '@nestjs/common';
+import { PaginationResponseDto } from 'src/dtos/pagination-response.dto';
+import { PaginationDto } from 'src/dtos/pagination.dto';
+import { PAGINATION_DEFAULT } from 'src/utils/constants';
+import { FindOptionsOrder, Repository } from 'typeorm';
+import { OrderFilter } from '../enums/order-filter.enum';
+import { AbstractEntity } from 'src/entities/abstract.entity';
 
 @Injectable()
 export class PaginationService<T extends AbstractEntity> {
-  constructor() { }
+  constructor() {}
 
-  async paginate(repository: Repository<T>, filter: PaginationDto, withDeleted: boolean): Promise<PaginationResponseDto<T>> {
+  async paginate(
+    repository: Repository<T>,
+    filter: PaginationDto,
+    withDeleted: boolean,
+  ): Promise<PaginationResponseDto<T>> {
     const page = Number(filter.page) || PAGINATION_DEFAULT.page;
     const perPage = Number(filter.per_page) || PAGINATION_DEFAULT.per_page;
     const orderFilter = filter.order || OrderFilter.DESCENDING;
@@ -34,8 +38,8 @@ export class PaginationService<T extends AbstractEntity> {
       next_page: nextPage,
       last_page: lastPage,
       current_page: page,
-      prev_page: prevPage
-    }
+      prev_page: prevPage,
+    };
 
     return response;
   }

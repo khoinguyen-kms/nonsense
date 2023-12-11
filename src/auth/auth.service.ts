@@ -13,7 +13,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
-  ) { }
+  ) {}
 
   async login(username: string, password: string): Promise<any> {
     const currentUser = await this.userService.authentication(

@@ -1,16 +1,11 @@
 import { UserRole } from 'src/shared/enums/userRole.enum';
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { AbstractEntity } from './abstract.entity';
 
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
-
   @Column({ type: 'varchar', unique: true })
   username: string;
 
@@ -27,34 +22,39 @@ export class User extends AbstractEntity {
   roles: UserRole[];
 
   @Column({ type: 'varchar', name: 'first_name' })
-  firstName: string
+  firstName: string;
 
   @Column({ type: 'varchar', name: 'last_name' })
-  lastName: string
+  lastName: string;
 
   @Column({ name: 'dob', type: 'date', nullable: true })
-  dateOfBirth: Date
+  dateOfBirth: Date;
 
   @Column({ type: 'boolean', default: true, name: 'is_active' })
-  isActive: boolean
+  isActive: boolean;
 
   @Column({ type: 'varchar', nullable: true, name: 'phone_number' })
-  phoneNumber: string
+  phoneNumber: string;
 
   @Column({ type: 'varchar', nullable: true })
-  address: string
+  address: string;
 
   @Column({ type: 'varchar', unique: true, nullable: false })
-  email: string
+  email: string;
 
   @Column({ type: 'varchar', nullable: true, name: 'avatar_url' })
-  avatarUrl: string
+  avatarUrl: string;
 
   @Column({ type: 'varchar', nullable: true, name: 'auth_stragety' })
-  authStragety: string
+  authStragety: string;
 
   @Exclude()
-  @Column({ type: 'varchar', nullable: true, default: null, name: 'refresh_token' })
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    default: null,
+    name: 'refresh_token',
+  })
   refreshToken: string;
 
   @BeforeInsert()

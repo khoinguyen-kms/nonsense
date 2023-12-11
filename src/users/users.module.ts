@@ -8,13 +8,9 @@ import { User } from 'src/entities/user.entity';
 import { PaginationModule } from 'src/shared/services/pagination.module';
 
 @Module({
-  imports: [
-    ConfigModule,
-    PaginationModule,
-    TypeOrmModule.forFeature([User])
-  ],
+  imports: [ConfigModule, PaginationModule, TypeOrmModule.forFeature([User])],
   providers: [UsersService, ConfigModule, UserRepository],
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UsersModule { }
+export class UsersModule {}
