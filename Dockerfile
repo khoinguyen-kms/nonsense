@@ -1,10 +1,13 @@
-FROM node:alpine
+FROM node:20.10-alpine
 
 WORKDIR /app
 COPY package*.json ./
 COPY . /app
-RUN npm install
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+RUN yarn
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev:docker"]
+ENTRYPOINT ["sh", "./entrypoint.sh"]
+#CMD ["yarn", "start:dev"]
 

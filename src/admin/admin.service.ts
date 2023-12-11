@@ -5,9 +5,7 @@ import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AdminService {
-  constructor(
-    private readonly userService: UsersService
-  ) { }
+  constructor(private readonly userService: UsersService) {}
 
   async getAllUsers(filter: PaginationDto): Promise<any> {
     return await this.userService.getUsersWithDeleted(filter);

@@ -1,9 +1,13 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty } from '@nestjs/swagger';
+import { OrderFilter } from 'src/shared/enums/order-filter.enum';
 
 export class PaginationDto {
   @ApiProperty()
-  page: string
+  page: string;
 
   @ApiProperty()
-  per_page: string
+  per_page: string;
+
+  @ApiProperty({ type: 'enum', enum: OrderFilter })
+  order: OrderFilter
 }

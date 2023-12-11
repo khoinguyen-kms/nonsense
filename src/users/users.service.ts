@@ -1,41 +1,56 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { User } from 'src/entities/user.entity';
-import { UserRepository } from './user.repository';
-import * as bcrypt from "bcrypt";
+import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { UpdateUserDto } from 'src/dtos/update-user.dto';
 import { PaginationDto } from 'src/dtos/pagination.dto';
-import { PAGINATION_DEFAULT } from 'src/utils/constants';
+import { PaginationService } from 'src/shared/services/pagination.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+
+    private readonly paginationService: PaginationService<User>
   ) { }
 
   async createNewUser(inputs: CreateUserDto) {
-    const { confirm_password, ...user } = inputs
+    const { confirm_password, ...user } = inputs;
+    const checkUser = this.findUserByUsername(inputs.username);
+    if (checkUser) throw new BadRequestException(`User ${inputs.username} is already registerated.`);
 
     if (confirm_password === user.password) {
       const newUser = this.userRepository.create(user);
       return await this.userRepository.save(newUser);
     }
 
-    throw new BadRequestException('Confirm password should be matched with the password');
+    throw new BadRequestException(
+      'Confirm password should be matched with the password',
+    );
   }
 
   async findUserByUsername(username: string): Promise<User | null> {
     return await this.userRepository.findOne({ where: { username } });
   }
 
-  async authentication(username: string, password: string): Promise<User | null> {
+  async authentication(
+    username: string,
+    password: string,
+  ): Promise<User | null> {
     const user = await this.findUserByUsername(username);
     if (!user) return null;
 
-    const isCorrectPassword = await this.comparePassword(password, user?.password);
+    const isCorrectPassword = await this.comparePassword(
+      password,
+      user?.password,
+    );
 
     if (!isCorrectPassword) return null;
 
@@ -51,29 +66,7 @@ export class UsersService {
   }
 
   async getUsersWithDeleted(filter: PaginationDto) {
-    const page = Number(filter.page) || PAGINATION_DEFAULT.page;
-    const perPage = Number(filter.per_page) || PAGINATION_DEFAULT.per_page;
-    const skip = (page - 1) * perPage;
-
-    const [users, total] = await this.userRepository.findAndCount({
-      withDeleted: true,
-      take: perPage,
-      skip: skip,
-      order: { createdAt: 'DESC' },
-    });
-
-    const lastPage = Math.ceil(total / perPage);
-    const nextPage = page + 1 > lastPage ? null : page + 1;
-    const prevPage = page - 1 < 1 ? null : page - 1;
-    return {
-      data: users,
-      metadata: {
-        total,
-        current_page: page,
-        next_page: nextPage,
-        last_page: lastPage
-      }
-    }
+    return this.paginationService.paginate(this.userRepository, filter, true);
   }
 
   async removeUserSoftly(id: number): Promise<boolean> {
@@ -83,7 +76,10 @@ export class UsersService {
     return await this.updateSingleAttribute(currentUser);
   }
 
-  async updateRefreshToken(id: number, newRefreshToken: string): Promise<boolean> {
+  async updateRefreshToken(
+    id: number,
+    newRefreshToken: string,
+  ): Promise<boolean> {
     const currentUser = await this.findUserById(id);
     currentUser.refreshToken = newRefreshToken;
 
@@ -100,7 +96,6 @@ export class UsersService {
   async updateUser(id: number, inputs: UpdateUserDto): Promise<User | null> {
     const currentUser = await this.findUserById(id);
 
-
     await this.userRepository.save(currentUser);
     return null;
   }
@@ -111,7 +106,8 @@ export class UsersService {
 
   private async findUserById(id: number): Promise<User> {
     const currentUser = await this.userRepository.findOne({ where: { id } });
-    if (!currentUser || currentUser.deletedAt) throw new NotFoundException('User not found');
+    if (!currentUser || currentUser.deletedAt)
+      throw new NotFoundException('User not found');
 
     return currentUser;
   }

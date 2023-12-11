@@ -1,4 +1,4 @@
-import { DocumentBuilder } from "@nestjs/swagger";
+import { DocumentBuilder } from '@nestjs/swagger';
 
 export const swaggerConfig = new DocumentBuilder()
   .setTitle('Nonsense Application')
@@ -8,5 +8,4 @@ export const swaggerConfig = new DocumentBuilder()
   .addTag('Admin')
   .addTag('Users')
   .addBearerAuth()
-  .build()
-
+  .build();

@@ -6,10 +6,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-
-  constructor(
-    private userService: UsersService
-  ) { }
+  constructor(private userService: UsersService) {}
 
   @HttpCode(HttpStatus.OK)
   @Get()
