@@ -1,16 +1,22 @@
 import {
   BadRequestException,
+  HttpStatus,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { User } from 'src/entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
-import { UpdateUserDto } from 'src/dtos/update-user.dto';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { PaginationDto } from 'src/dtos/pagination.dto';
 import { PaginationService } from 'src/shared/services/pagination.service';
+import { UpdateProfileDto } from 'src/dtos/update-profile.dto';
+import { BaseResponseDto } from 'src/dtos/base-response.dto';
+import { plainToClass } from 'class-transformer';
+import { UserRole } from 'src/shared/enums/userRole.enum';
 
 @Injectable()
 export class UsersService {
@@ -19,12 +25,14 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
 
     private readonly paginationService: PaginationService<User>,
-  ) {}
+  ) { }
 
   async createNewUser(inputs: CreateUserDto) {
     const { confirm_password, ...user } = inputs;
-    const checkUser = this.findUserByUsername(inputs.username);
-    if (checkUser)
+    const username = inputs.username;
+
+    const isExisted = await this.isUserExistedBy({ username });
+    if (isExisted)
       throw new BadRequestException(
         `User ${inputs.username} is already registerated.`,
       );
@@ -46,7 +54,7 @@ export class UsersService {
   async authentication(
     username: string,
     password: string,
-  ): Promise<User | null> {
+  ): Promise<User> {
     const user = await this.findUserByUsername(username);
     if (!user) return null;
 
@@ -55,7 +63,7 @@ export class UsersService {
       user?.password,
     );
 
-    if (!isCorrectPassword) return null;
+    if (!isCorrectPassword) throw new UnauthorizedException('Invalid credentials');
 
     return user;
   }
@@ -75,6 +83,7 @@ export class UsersService {
   async removeUserSoftly(id: number): Promise<boolean> {
     const currentUser = await this.findUserById(id);
     currentUser.deletedAt = new Date();
+    currentUser.isActive = false;
 
     return await this.updateSingleAttribute(currentUser);
   }
@@ -89,29 +98,60 @@ export class UsersService {
     return await this.updateSingleAttribute(currentUser);
   }
 
-  async updateSingleAttribute(currentUser: User): Promise<boolean> {
-    const updated = await this.userRepository.save(currentUser);
-    if (!updated) return false;
-
-    return true;
+  async getUserProfile(id: number) {
+    try {
+      const data = await this.findUserById(id);
+      return { data }
+    } catch {
+      throw new UnauthorizedException('Invalid credentials');
+    }
   }
 
-  async updateUser(id: number, inputs: UpdateUserDto): Promise<User | null> {
-    const currentUser = await this.findUserById(id);
+  async updateUserProfile(id: number, inputs: UpdateProfileDto): Promise<BaseResponseDto<User | any>> {
+    const user = await this.findUserById(id);
+    if (Object.keys(inputs).length === 0 && inputs.constructor === Object) {
+      return this.getDefaultResponse(HttpStatus.OK, 'Nothing happens');
+    }
 
-    await this.userRepository.save(currentUser);
-    return null;
+    const updatedData = plainToClass(UpdateProfileDto, inputs);
+    Object.assign(user, updatedData);
+
+    const updatedUser = await this.userRepository.save(user);
+    return new BaseResponseDto(HttpStatus.OK, 'Update profile successfully', updatedUser);
   }
 
-  private async comparePassword(passwod: string, storedPassword: string) {
+  async updateRole(id: number, roleToUpdate: UserRole): Promise<boolean> {
+    const user = await this.findUserById(id);
+    user.roles = [roleToUpdate]
+    return await this.updateSingleAttribute(user);
+  }
+
+  private async updateSingleAttribute(currentUser: User): Promise<boolean> {
+    try {
+      await this.userRepository.save(currentUser);
+      return true;
+    } catch (err) {
+      throw new UnprocessableEntityException(err);
+    }
+  }
+
+  private async comparePassword(passwod: string, storedPassword: string): Promise<boolean> {
     return await bcrypt.compare(passwod, storedPassword);
   }
 
+  private getDefaultResponse(status: number, message: string) {
+    return new BaseResponseDto(status, message, {});
+  }
+
   private async findUserById(id: number): Promise<User> {
-    const currentUser = await this.userRepository.findOne({ where: { id } });
+    const currentUser = await this.userRepository.findOneBy({ id });
     if (!currentUser || currentUser.deletedAt)
       throw new NotFoundException('User not found');
 
     return currentUser;
+  }
+
+  private async isUserExistedBy(where: FindOptionsWhere<User>): Promise<boolean> {
+    return await this.userRepository.exist({ where });
   }
 }

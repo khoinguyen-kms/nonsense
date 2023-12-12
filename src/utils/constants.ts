@@ -6,5 +6,5 @@ export const IS_PUBLIC_ROUTE = 'isPublicRoute';
 export const ROLES_KEY = 'roles';
 export const PAGINATION_DEFAULT = {
   page: 1,
-  per_page: 10,
+  per_page: 20,
 };

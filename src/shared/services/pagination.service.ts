@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { PaginationResponseDto } from 'src/dtos/pagination-response.dto';
 import { PaginationDto } from 'src/dtos/pagination.dto';
 import { PAGINATION_DEFAULT } from 'src/utils/constants';
@@ -8,39 +8,52 @@ import { AbstractEntity } from 'src/entities/abstract.entity';
 
 @Injectable()
 export class PaginationService<T extends AbstractEntity> {
-  constructor() {}
+  constructor() { }
 
   async paginate(
     repository: Repository<T>,
     filter: PaginationDto,
     withDeleted: boolean,
-  ): Promise<PaginationResponseDto<T>> {
+  ): Promise<PaginationResponseDto<T> | any> {
+    const { page, perPage, orderFilter } = this.extractPaginationParams(filter);
+    const { data, metadata } = await this.getPaginatedData(repository, page, perPage, orderFilter, withDeleted);
+
+    return this.createPaginationResponse(data, metadata);
+  }
+
+  private extractPaginationParams(filter: PaginationDto) {
     const page = Number(filter.page) || PAGINATION_DEFAULT.page;
     const perPage = Number(filter.per_page) || PAGINATION_DEFAULT.per_page;
     const orderFilter = filter.order || OrderFilter.DESCENDING;
+
+    return { page, perPage, orderFilter };
+  }
+
+  private async getPaginatedData(
+    repository: Repository<T>,
+    page: number,
+    perPage: number,
+    order: string,
+    withDeleted: boolean,
+  ) {
     const skip = (page - 1) * perPage;
 
-    const [res, total] = await repository.findAndCount({
+    const [data, total] = await repository.findAndCount({
       withDeleted,
       take: perPage,
       skip,
-      order: { createdAt: orderFilter.toUpperCase() } as FindOptionsOrder<T>,
+      order: { createdAt: order.toUpperCase() } as FindOptionsOrder<T>,
     });
 
     const lastPage = Math.ceil(total / perPage);
     const nextPage = page + 1 > lastPage ? null : page + 1;
     const prevPage = page - 1 < 1 ? null : page - 1;
 
-    const response = new PaginationResponseDto<T>();
-    response.data = res;
-    response.metadata = {
-      total,
-      next_page: nextPage,
-      last_page: lastPage,
-      current_page: page,
-      prev_page: prevPage,
-    };
+    const metadata = { total, nextPage, lastPage, currentPage: page, prevPage };
+    return { data, metadata };
+  }
 
-    return response;
+  private createPaginationResponse(data: T[], metadata: any) {
+    return new PaginationResponseDto<T>(HttpStatus.OK, '', data, metadata);
   }
 }
