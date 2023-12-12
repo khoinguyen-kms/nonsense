@@ -15,7 +15,14 @@ services:
     volumes:
       - mysql-volume:/var/lib/mysql:rw
       - ./sql:/docker-entrypoint-initdb.d/
-
+  
+  cache:
+    image: redis:latest
+    ports:
+      - $REDIS_PORT:$REDIS_PORT
+    command: redis-server --save 20 1 --loglevel warning
+    restart: always
+  
   # Node api services:
   api:
     build:
@@ -24,6 +31,9 @@ services:
     container_name: api_container
     ports:
       - 3000:3000 
+    depends_on:
+      - mysql
+      - cache 
     env_file: .env
     environment:
       - DB_HOST=$MYSQLDB_HOST
@@ -31,8 +41,10 @@ services:
       - DB_PASSWORD=$MYSQLDB_PASSWORD
       - DB_DATABASE=$MYSQLDB_DATABASE
       - DB_PORT=$MYSQLDB_DOCKER_PORT
+      - REDIS_HOST=$REDIS_HOST
+      - REDIS_PORT=$REDIS_PORT
     restart: always
 
 volumes:
-  mysql-volume:
+  mysql-volume: {}
 

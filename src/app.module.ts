@@ -14,6 +14,7 @@ import { AdminService } from './admin/admin.service';
 import { AdminController } from './admin/admin.controller';
 import { AdminModule } from './admin/admin.module';
 import { RolesGuard } from './auth/roles.guard';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -22,6 +23,12 @@ import { RolesGuard } from './auth/roles.guard';
     UsersModule,
     AuthModule,
     AdminModule,
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
   ],
   controllers: [AppController, AuthController, AdminController],
   providers: [
@@ -29,13 +36,13 @@ import { RolesGuard } from './auth/roles.guard';
     AuthService,
     {
       provide: APP_GUARD,
-      useClass: JwtGuard
+      useClass: JwtGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard
+      useClass: RolesGuard,
     },
-    AdminService
+    AdminService,
   ],
 })
 export class AppModule { }
