@@ -19,4 +19,4 @@ import { JWT_SECRET_KEY } from 'src/utils/constants';
   providers: [AuthService],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

@@ -22,7 +22,7 @@ import { User } from 'src/entities/user.entity';
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) { }
+  constructor(private readonly adminService: AdminService) {}
 
   @Delete('users/:id')
   @HttpCode(HttpStatus.OK)
@@ -34,14 +34,19 @@ export class AdminController {
   @Roles(UserRole.ADMIN)
   @Get('users')
   @HttpCode(HttpStatus.OK)
-  async fetchAllUsers(@Query() query: PaginationDto): Promise<BaseResponseDto<User>> {
+  async fetchAllUsers(
+    @Query() query: PaginationDto,
+  ): Promise<BaseResponseDto<User>> {
     return await this.adminService.getAllUsers(query);
   }
 
   @Roles(UserRole.ADMIN)
   @Post('users/:id/role')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateUserRole(@Param('id') id: string, @Body() params: UpdateRoleDto): Promise<BaseResponseDto<any>> {
+  async updateUserRole(
+    @Param('id') id: string,
+    @Body() params: UpdateRoleDto,
+  ): Promise<BaseResponseDto<any>> {
     return await this.adminService.updateRole(parseInt(id), params.role);
   }
 }

@@ -1,4 +1,11 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/utils/decorators';
@@ -10,7 +17,7 @@ import { User } from 'src/entities/user.entity';
 @ApiTags('Users')
 @Controller()
 export class UsersController {
-  constructor(private userService: UsersService) { }
+  constructor(private userService: UsersService) {}
 
   @Get('users')
   @HttpCode(HttpStatus.OK)
@@ -27,7 +34,13 @@ export class UsersController {
 
   @Post('profile')
   @HttpCode(HttpStatus.OK)
-  async updateProfile(@CurrentUser() currentUser: any, @Body() updateProfileDto: UpdateProfileDto): Promise<BaseResponseDto<User | any>> {
-    return this.userService.updateUserProfile(currentUser['sub'], updateProfileDto);
+  async updateProfile(
+    @CurrentUser() currentUser: any,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ): Promise<BaseResponseDto<User | any>> {
+    return this.userService.updateUserProfile(
+      currentUser['sub'],
+      updateProfileDto,
+    );
   }
 }

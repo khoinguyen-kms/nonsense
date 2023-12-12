@@ -17,7 +17,7 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
-  ) { }
+  ) {}
 
   async login(username: string, password: string): Promise<any> {
     const currentUser = await this.userService.authentication(
@@ -31,12 +31,20 @@ export class AuthService {
       currentUser.username,
       currentUser.roles,
     );
-    return new BaseResponseDto<Tokens>(HttpStatus.OK, 'Signin successfully', tokens);
+    return new BaseResponseDto<Tokens>(
+      HttpStatus.OK,
+      'Signin successfully',
+      tokens,
+    );
   }
 
   async registration(inputs: CreateUserDto): Promise<BaseResponseDto<User>> {
     const createdUser = await this.userService.createNewUser(inputs);
-    return new BaseResponseDto(HttpStatus.OK, 'Registration successfully', createdUser);
+    return new BaseResponseDto(
+      HttpStatus.OK,
+      'Registration successfully',
+      createdUser,
+    );
   }
 
   async refreshToken(refreshToken: string) {
@@ -58,7 +66,7 @@ export class AuthService {
     }
   }
 
-  async generateTokens(
+  private async generateTokens(
     sub: number,
     username: string,
     roles: string[],

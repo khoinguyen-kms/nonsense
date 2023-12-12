@@ -8,7 +8,7 @@ import { AbstractEntity } from 'src/entities/abstract.entity';
 
 @Injectable()
 export class PaginationService<T extends AbstractEntity> {
-  constructor() { }
+  constructor() {}
 
   async paginate(
     repository: Repository<T>,
@@ -16,7 +16,13 @@ export class PaginationService<T extends AbstractEntity> {
     withDeleted: boolean,
   ): Promise<PaginationResponseDto<T> | any> {
     const { page, perPage, orderFilter } = this.extractPaginationParams(filter);
-    const { data, metadata } = await this.getPaginatedData(repository, page, perPage, orderFilter, withDeleted);
+    const { data, metadata } = await this.getPaginatedData(
+      repository,
+      page,
+      perPage,
+      orderFilter,
+      withDeleted,
+    );
 
     return this.createPaginationResponse(data, metadata);
   }

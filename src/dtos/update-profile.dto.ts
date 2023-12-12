@@ -1,81 +1,88 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsDate, IsDateString, IsOptional, IsPhoneNumber, IsString, MaxDate, MaxLength } from 'class-validator';
+import {
+  IsDate,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  MaxDate,
+  MaxLength,
+} from 'class-validator';
 import { UserRole } from 'src/shared/enums/userRole.enum';
 
 export class UpdateProfileDto {
-
   @ApiProperty({
     type: 'string',
     format: 'string',
     example: 'Abraham',
-    required: false
+    required: false,
   })
   @IsString()
   @MaxLength(15)
   @IsOptional()
-  firstName: string
+  firstName: string;
 
   @ApiProperty({
     type: 'string',
     format: 'string',
     example: 'Gallagher',
-    required: false
+    required: false,
   })
   @IsString()
   @MaxLength(15)
   @IsOptional()
-  lastName: string
+  lastName: string;
 
   @ApiProperty({
     type: 'string',
     format: 'string',
     example: 'Thu Duc District, HCMC',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
   @MaxLength(20)
-  address: string
+  address: string;
 
   @ApiProperty({
     type: 'string',
     format: 'string',
     example: '+84123456789',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsPhoneNumber()
-  phoneNumber: string
+  phoneNumber: string;
 
   @ApiProperty({
     type: 'string',
     format: 'date',
     example: new Date(1999, 1, 1),
-    required: false
+    required: false,
   })
   @IsDate()
   @MaxDate(() => new Date(), {
-    message: () => `maximal allowed date for date of birth is ${new Date().toDateString()}`
+    message: () =>
+      `maximal allowed date for date of birth is ${new Date().toDateString()}`,
   })
   @IsOptional()
-  dateOfBirth: Date
+  dateOfBirth: Date;
 
   @Exclude()
-  username: string
+  username: string;
 
   @Exclude()
-  password: string
+  password: string;
 
   @Exclude()
-  roles: UserRole[]
+  roles: UserRole[];
 
   @Exclude()
-  createdAt: Date
+  createdAt: Date;
 
   @Exclude()
-  updatedAt: Date
+  updatedAt: Date;
 
   @Exclude()
-  deletedAt: Date
+  deletedAt: Date;
 }
