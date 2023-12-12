@@ -45,4 +45,4 @@ import { BullModule } from '@nestjs/bull';
     AdminService,
   ],
 })
-export class AppModule { }
+export class AppModule {}

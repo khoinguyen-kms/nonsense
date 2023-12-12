@@ -1,6 +1,6 @@
-import { ApiBody, ApiProperty } from "@nestjs/swagger";
-import { IsEnum } from "class-validator";
-import { UserRole } from "src/shared/enums/userRole.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
+import { UserRole } from 'src/shared/enums/userRole.enum';
 
 export class UpdateRoleDto {
   @ApiProperty()

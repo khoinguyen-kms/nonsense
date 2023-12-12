@@ -25,7 +25,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
 
     private readonly paginationService: PaginationService<User>,
-  ) { }
+  ) {}
 
   async createNewUser(inputs: CreateUserDto) {
     const { confirm_password, ...user } = inputs;
@@ -51,10 +51,7 @@ export class UsersService {
     return await this.userRepository.findOne({ where: { username } });
   }
 
-  async authentication(
-    username: string,
-    password: string,
-  ): Promise<User> {
+  async authentication(username: string, password: string): Promise<User> {
     const user = await this.findUserByUsername(username);
     if (!user) return null;
 
@@ -63,7 +60,8 @@ export class UsersService {
       user?.password,
     );
 
-    if (!isCorrectPassword) throw new UnauthorizedException('Invalid credentials');
+    if (!isCorrectPassword)
+      throw new UnauthorizedException('Invalid credentials');
 
     return user;
   }
@@ -72,7 +70,7 @@ export class UsersService {
     return await this.userRepository.find({ where: { deletedAt: null } });
   }
 
-  async getUserBy(filters: {}): Promise<User | null> {
+  async getUserBy(filters: any): Promise<User | null> {
     return await this.userRepository.findOneBy(filters);
   }
 
@@ -101,13 +99,16 @@ export class UsersService {
   async getUserProfile(id: number) {
     try {
       const data = await this.findUserById(id);
-      return { data }
+      return { data };
     } catch {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
 
-  async updateUserProfile(id: number, inputs: UpdateProfileDto): Promise<BaseResponseDto<User | any>> {
+  async updateUserProfile(
+    id: number,
+    inputs: UpdateProfileDto,
+  ): Promise<BaseResponseDto<User | any>> {
     const user = await this.findUserById(id);
     if (Object.keys(inputs).length === 0 && inputs.constructor === Object) {
       return this.getDefaultResponse(HttpStatus.OK, 'Nothing happens');
@@ -117,12 +118,16 @@ export class UsersService {
     Object.assign(user, updatedData);
 
     const updatedUser = await this.userRepository.save(user);
-    return new BaseResponseDto(HttpStatus.OK, 'Update profile successfully', updatedUser);
+    return new BaseResponseDto(
+      HttpStatus.OK,
+      'Update profile successfully',
+      updatedUser,
+    );
   }
 
   async updateRole(id: number, roleToUpdate: UserRole): Promise<boolean> {
     const user = await this.findUserById(id);
-    user.roles = [roleToUpdate]
+    user.roles = [roleToUpdate];
     return await this.updateSingleAttribute(user);
   }
 
@@ -135,7 +140,10 @@ export class UsersService {
     }
   }
 
-  private async comparePassword(passwod: string, storedPassword: string): Promise<boolean> {
+  private async comparePassword(
+    passwod: string,
+    storedPassword: string,
+  ): Promise<boolean> {
     return await bcrypt.compare(passwod, storedPassword);
   }
 
@@ -151,7 +159,9 @@ export class UsersService {
     return currentUser;
   }
 
-  private async isUserExistedBy(where: FindOptionsWhere<User>): Promise<boolean> {
+  private async isUserExistedBy(
+    where: FindOptionsWhere<User>,
+  ): Promise<boolean> {
     return await this.userRepository.exist({ where });
   }
 }

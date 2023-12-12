@@ -5,11 +5,11 @@ import { OrderFilter } from 'src/shared/enums/order-filter.enum';
 export class PaginationDto {
   @ApiProperty({ required: false, type: 'number', example: 1 })
   @IsOptional()
-  page: string;
+  page: number;
 
   @ApiProperty({ required: false, type: 'number', example: 20 })
   @IsOptional()
-  per_page: string;
+  per_page: number;
 
   @IsOptional()
   @ApiProperty({ type: 'enum', enum: OrderFilter, required: false })
