@@ -1,19 +1,23 @@
 import {
   BadRequestException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { BaseResponseDto } from 'src/dtos/base-response.dto';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
+import { User } from 'src/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { JWT_REFRESH_SECRET_KEY } from 'src/utils/constants';
+import { Tokens } from 'src/utils/types';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
-  ) {}
+  ) { }
 
   async login(username: string, password: string): Promise<any> {
     const currentUser = await this.userService.authentication(
@@ -22,16 +26,17 @@ export class AuthService {
     );
     if (!currentUser) throw new UnauthorizedException('Invalid credentials');
 
-    const tokens = this.generateTokens(
+    const tokens = await this.generateTokens(
       currentUser.id,
       currentUser.username,
       currentUser.roles,
     );
-    return tokens;
+    return new BaseResponseDto<Tokens>(HttpStatus.OK, 'Signin successfully', tokens);
   }
 
-  async registration(inputs: CreateUserDto) {
-    return this.userService.createNewUser(inputs);
+  async registration(inputs: CreateUserDto): Promise<BaseResponseDto<User>> {
+    const createdUser = await this.userService.createNewUser(inputs);
+    return new BaseResponseDto(HttpStatus.OK, 'Registration successfully', createdUser);
   }
 
   async refreshToken(refreshToken: string) {
@@ -57,16 +62,16 @@ export class AuthService {
     sub: number,
     username: string,
     roles: string[],
-  ): Promise<{ access_token: string; refresh_token: string }> {
+  ): Promise<Tokens> {
     const payload = { sub, username, roles };
-    const access_token = await this.jwtService.signAsync(payload);
-    const refresh_token = await this.jwtService.signAsync(payload, {
+    const accessToken = await this.jwtService.signAsync(payload);
+    const refreshToken = await this.jwtService.signAsync(payload, {
       secret: JWT_REFRESH_SECRET_KEY,
       expiresIn: '7d',
     });
 
-    await this.userService.updateRefreshToken(sub, refresh_token);
+    await this.userService.updateRefreshToken(sub, refreshToken);
 
-    return { access_token, refresh_token };
+    return { accessToken, refreshToken };
   }
 }
