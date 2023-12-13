@@ -17,6 +17,7 @@ $ yarn
 
 ## Running the app
 |> If you build up by Docker, these process don't have to be ran again
+
 ```bash
 # development
 $ yarn run start
@@ -39,3 +40,13 @@ $ yarn run test:e2e
 # test coverage
 $ yarn run test:cov
 ```
+## Seed datas
+There would be 21 users includes 1 `superadmin` account with
+```
+{
+    username: "superadmin",
+    password: "password"
+}
+```
+
+If you run mannually with `yarn`: `yarn db:seeds` is the tool you need

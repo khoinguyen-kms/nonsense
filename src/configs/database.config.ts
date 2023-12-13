@@ -5,7 +5,7 @@ import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOpti
 export const mysqlConfig: MysqlConnectionOptions & SeederOptions = {
   name: 'default',
   type: 'mysql',
-  host: 'localhost', // mysql_container
+  host: 'mysql_container',
   port: 3306,
   username: 'root',
   password: 'root',
