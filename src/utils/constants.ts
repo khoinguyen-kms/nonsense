@@ -8,3 +8,4 @@ export const PAGINATION_DEFAULT = {
   page: 1,
   per_page: 20,
 };
+export const MAXIMUM_AVAILABLE_STUDENTS_IN_CLASS = 150;

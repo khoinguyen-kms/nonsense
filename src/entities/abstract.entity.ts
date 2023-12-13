@@ -1,12 +1,13 @@
 import { Exclude } from 'class-transformer';
 import {
+  BaseEntity,
   CreateDateColumn,
   DeleteDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-export class AbstractEntity {
+export class AbstractEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

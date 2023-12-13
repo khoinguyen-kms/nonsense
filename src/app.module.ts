@@ -15,6 +15,9 @@ import { AdminController } from './admin/admin.controller';
 import { AdminModule } from './admin/admin.module';
 import { RolesGuard } from './auth/roles.guard';
 import { BullModule } from '@nestjs/bull';
+import { LectureClassesController } from './lecture-classes/lecture-classes.controller';
+import { LectureClassesService } from './lecture-classes/lecture-classes.service';
+import { LectureClassesModule } from './lecture-classes/lecture-classes.module';
 
 @Module({
   imports: [
@@ -23,6 +26,7 @@ import { BullModule } from '@nestjs/bull';
     UsersModule,
     AuthModule,
     AdminModule,
+    LectureClassesModule,
     BullModule.forRoot({
       redis: {
         host: 'localhost',
@@ -30,7 +34,7 @@ import { BullModule } from '@nestjs/bull';
       },
     }),
   ],
-  controllers: [AppController, AuthController, AdminController],
+  controllers: [AppController, AuthController, AdminController, LectureClassesController],
   providers: [
     AppService,
     AuthService,
@@ -45,4 +49,4 @@ import { BullModule } from '@nestjs/bull';
     AdminService,
   ],
 })
-export class AppModule {}
+export class AppModule { }

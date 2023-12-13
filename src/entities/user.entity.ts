@@ -1,8 +1,9 @@
 import { UserRole } from 'src/shared/enums/userRole.enum';
-import { BeforeInsert, Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { AbstractEntity } from './abstract.entity';
+import { LectureClass } from './lecture-class.entity';
 
 @Entity({ name: 'users' })
 export class User extends AbstractEntity {
@@ -56,6 +57,14 @@ export class User extends AbstractEntity {
     name: 'refresh_token',
   })
   refreshToken: string;
+
+  @ManyToMany(() => LectureClass, (lectureClass) => lectureClass.students, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  @JoinTable({ name: 'students_with_classes' })
+  lectureClasses: LectureClass[]
 
   @BeforeInsert()
   private async hashPassword() {

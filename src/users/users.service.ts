@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from 'src/dtos/create-user.dto';
 import { User } from 'src/entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { FindOptionsWhere, In, Repository } from 'typeorm';
 import { PaginationDto } from 'src/dtos/pagination.dto';
 import { PaginationService } from 'src/shared/services/pagination.service';
 import { UpdateProfileDto } from 'src/dtos/update-profile.dto';
@@ -25,7 +25,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
 
     private readonly paginationService: PaginationService<User>,
-  ) {}
+  ) { }
 
   async createNewUser(inputs: CreateUserDto) {
     const { confirm_password, ...user } = inputs;
@@ -98,8 +98,8 @@ export class UsersService {
 
   async getUserProfile(id: number) {
     try {
-      const data = await this.findUserById(id);
-      return { data };
+      const data = await this.userRepository.findOne({ where: { id }, relations: { lectureClasses: true } })
+      return { data }
     } catch {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -117,18 +117,26 @@ export class UsersService {
     const updatedData = plainToClass(UpdateProfileDto, inputs);
     Object.assign(user, updatedData);
 
-    const updatedUser = await this.userRepository.save(user);
-    return new BaseResponseDto(
-      HttpStatus.OK,
-      'Update profile successfully',
-      updatedUser,
-    );
+    try {
+      const updatedUser = await this.userRepository.save(user);
+      return new BaseResponseDto(
+        HttpStatus.OK,
+        'Update profile successfully',
+        updatedUser,
+      );
+    } catch (err) {
+      throw new UnprocessableEntityException(err);
+    }
   }
 
   async updateRole(id: number, roleToUpdate: UserRole): Promise<boolean> {
     const user = await this.findUserById(id);
     user.roles = [roleToUpdate];
     return await this.updateSingleAttribute(user);
+  }
+
+  async findByIds(ids: number[]): Promise<User[]> {
+    return await this.userRepository.findBy({ id: In(ids) });
   }
 
   private async updateSingleAttribute(currentUser: User): Promise<boolean> {
