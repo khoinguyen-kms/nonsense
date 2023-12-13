@@ -18,7 +18,6 @@ export class User extends AbstractEntity {
     type: 'enum',
     default: [UserRole.USER],
     enum: UserRole,
-    array: true,
   })
   roles: UserRole[];
 
